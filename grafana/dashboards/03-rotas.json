@@ -1,0 +1,908 @@
+{
+ "uid": "03-rotas",
+ "title": "VPN Lab — 3. Melhor servidor intermediário e rotas",
+ "description": "Resultado contínuo do otimizador: qual servidor atende melhor todos os usuários e onde um relay ajuda.",
+ "tags": [
+  "vpnlab"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "10s",
+ "time": {
+  "from": "now-30m",
+  "to": "now"
+ },
+ "templating": {
+  "list": []
+ },
+ "panels": [
+  {
+   "type": "row",
+   "title": "Melhor hub para todos os usuários",
+   "id": 1,
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 0
+   },
+   "panels": []
+  },
+  {
+   "type": "stat",
+   "title": "Melhor hub — RTT médio",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_opt_best_hub{objective=\"media\"}",
+     "instant": true,
+     "legendFormat": "{{server}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "name",
+    "justifyMode": "center"
+   },
+   "id": 2,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 0,
+    "y": 1
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Melhor hub — pior caso",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_opt_best_hub{objective=\"pior_caso\"}",
+     "instant": true,
+     "legendFormat": "{{server}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "name",
+    "justifyMode": "center"
+   },
+   "id": 3,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 8,
+    "y": 1
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Melhor hub — qualidade de voz (MOS)",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_opt_best_hub{objective=\"mos\"}",
+     "instant": true,
+     "legendFormat": "{{server}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "name",
+    "justifyMode": "center"
+   },
+   "id": 4,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 8,
+    "x": 16,
+    "y": 1
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "RTT médio dos usuários até cada hub candidato",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sort(vpnlab_opt_hub_rtt_ms{stat=\"mean\"})",
+     "instant": true,
+     "legendFormat": "{{server}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "min": 0,
+     "color": {
+      "mode": "continuous-GrYlRd"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "showUnfilled": true,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 5,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 9,
+    "w": 12,
+    "x": 0,
+    "y": 5
+   }
+  },
+  {
+   "type": "bargauge",
+   "title": "RTT do usuário mais distante até cada hub",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sort(vpnlab_opt_hub_rtt_ms{stat=\"max\"})",
+     "instant": true,
+     "legendFormat": "{{server}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "min": 0,
+     "color": {
+      "mode": "continuous-GrYlRd"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "orientation": "horizontal",
+    "displayMode": "gradient",
+    "showUnfilled": true,
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    }
+   },
+   "id": 6,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 9,
+    "w": 12,
+    "x": 12,
+    "y": 5
+   }
+  },
+  {
+   "type": "table",
+   "title": "Ranking completo dos hubs",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_opt_hub_rank{objective=\"media\"}",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "expr": "vpnlab_opt_hub_rtt_ms{stat=\"mean\"}",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "C",
+     "expr": "vpnlab_opt_hub_rtt_ms{stat=\"p95\"}",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "D",
+     "expr": "vpnlab_opt_hub_rtt_ms{stat=\"max\"}",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "E",
+     "expr": "vpnlab_opt_hub_loss_ratio",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "F",
+     "expr": "vpnlab_opt_hub_mos{stat=\"mean\"}",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "G",
+     "expr": "vpnlab_opt_hub_mos{stat=\"min\"}",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "H",
+     "expr": "vpnlab_opt_hub_pair_rtt_ms{stat=\"mean\"}",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "I",
+     "expr": "vpnlab_opt_hub_coverage_ratio",
+     "instant": true,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "__name__": true,
+       "instance": true,
+       "job": true,
+       "objective": true,
+       "stat": true
+      },
+      "renameByName": {
+       "server": "servidor",
+       "Value #A": "posição",
+       "Value #B": "RTT médio",
+       "Value #C": "RTT p95",
+       "Value #D": "RTT máx",
+       "Value #E": "perda",
+       "Value #F": "MOS médio",
+       "Value #G": "MOS mín",
+       "Value #H": "usuário↔usuário",
+       "Value #I": "cobertura"
+      }
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "auto"
+     },
+     "decimals": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "RTT médio"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "RTT p95"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "RTT máx"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "usuário↔usuário"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "perda"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "percentunit"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "cobertura"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "percentunit"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "sortBy": [
+     {
+      "displayName": "posição",
+      "desc": false
+     }
+    ]
+   },
+   "id": 7,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 24,
+    "x": 0,
+    "y": 14
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Evolução do RTT médio por hub candidato",
+   "description": "Injete uma falha (./lab impair) e veja o ranking mudar.",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_opt_hub_rtt_ms{stat=\"mean\"}",
+     "legendFormat": "{{server}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "mean",
+      "max"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "id": 8,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 24,
+    "x": 0,
+    "y": 22
+   }
+  },
+  {
+   "type": "row",
+   "title": "Relays: usuário → servidor A → malha → servidor de saída B",
+   "id": 9,
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 30
+   },
+   "panels": []
+  },
+  {
+   "type": "table",
+   "title": "Rotas onde o relay ganha do caminho direto",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sort_desc(vpnlab_opt_route_gain_ms > 1)",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "B",
+     "expr": "vpnlab_opt_route_rtt_ms{route=\"direct\"}",
+     "instant": true,
+     "format": "table"
+    },
+    {
+     "refId": "C",
+     "expr": "label_replace(vpnlab_opt_route_rtt_ms{route=\"best\"}, \"via\", \"$1\", \"via\", \"(.*)\")",
+     "instant": true,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "__name__": true,
+       "instance": true,
+       "job": true,
+       "route": true
+      },
+      "renameByName": {
+       "client": "usuário",
+       "exit": "saída",
+       "Value #A": "ganho",
+       "Value #B": "direto",
+       "Value #C": "com relay"
+      }
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "auto"
+     },
+     "decimals": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "ganho"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "direto"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     },
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "com relay"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "sortBy": [
+     {
+      "displayName": "ganho",
+      "desc": true
+     }
+    ]
+   },
+   "id": 10,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 10,
+    "w": 12,
+    "x": 0,
+    "y": 31
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "Medido ponta a ponta pelo relay",
+   "description": "Sondas reais que atravessam dois servidores",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_probe_rtt_avg_ms{path=\"relay\"}",
+     "legendFormat": "{{src}} → {{via}} → {{dst}}"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "showPoints": "never"
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "mean",
+      "max"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "id": 11,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 10,
+    "w": 12,
+    "x": 12,
+    "y": 31
+   }
+  },
+  {
+   "type": "row",
+   "title": "Entre usuários",
+   "id": 12,
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 41
+   },
+   "panels": []
+  },
+  {
+   "type": "table",
+   "title": "RTT usuário ↔ usuário pelo melhor caminho (ms)",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_opt_pair_rtt_ms{route=\"best\"}",
+     "instant": true,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "groupingToMatrix",
+     "options": {
+      "columnField": "b",
+      "rowField": "a",
+      "valueField": "Value",
+      "emptyValue": "null"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "decimals": 1,
+     "color": {
+      "mode": "continuous-GrYlRd"
+     },
+     "custom": {
+      "align": "center",
+      "cellOptions": {
+       "type": "color-background",
+       "mode": "gradient"
+      }
+     }
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byRegexp",
+       "options": "^a.*"
+      },
+      "properties": [
+       {
+        "id": "custom.cellOptions",
+        "value": {
+         "type": "auto"
+        }
+       },
+       {
+        "id": "custom.align",
+        "value": "left"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm"
+   },
+   "id": 13,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 11,
+    "w": 12,
+    "x": 0,
+    "y": 42
+   }
+  },
+  {
+   "type": "table",
+   "title": "Melhor caminho entre cada par",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_opt_pair_rtt_ms{route=\"best\"}",
+     "instant": true,
+     "format": "table"
+    }
+   ],
+   "transformations": [
+    {
+     "id": "merge",
+     "options": {}
+    },
+    {
+     "id": "organize",
+     "options": {
+      "excludeByName": {
+       "Time": true,
+       "__name__": true,
+       "instance": true,
+       "job": true,
+       "route": true
+      },
+      "renameByName": {
+       "path": "caminho",
+       "Value": "RTT"
+      }
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "custom": {
+      "align": "auto"
+     },
+     "decimals": 1
+    },
+    "overrides": [
+     {
+      "matcher": {
+       "id": "byName",
+       "options": "RTT"
+      },
+      "properties": [
+       {
+        "id": "unit",
+        "value": "ms"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "showHeader": true,
+    "cellHeight": "sm",
+    "sortBy": [
+     {
+      "displayName": "RTT",
+      "desc": true
+     }
+    ]
+   },
+   "id": 14,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 11,
+    "w": 12,
+    "x": 12,
+    "y": 42
+   }
+  }
+ ],
+ "editable": true,
+ "annotations": {
+  "list": [
+   {
+    "builtIn": 1,
+    "datasource": {
+     "type": "grafana",
+     "uid": "-- Grafana --"
+    },
+    "enable": true,
+    "hide": true,
+    "iconColor": "rgba(0, 211, 255, 1)",
+    "name": "Annotations & Alerts",
+    "type": "dashboard"
+   },
+   {
+    "datasource": {
+     "type": "grafana",
+     "uid": "-- Grafana --"
+    },
+    "enable": true,
+    "iconColor": "#eb6834",
+    "name": "Testes do laboratório",
+    "target": {
+     "type": "tags",
+     "tags": [
+      "vpnlab"
+     ],
+     "limit": 200
+    }
+   }
+  ]
+ },
+ "links": [
+  {
+   "title": "Dashboards do VPN Lab",
+   "type": "dashboards",
+   "tags": [
+    "vpnlab"
+   ],
+   "asDropdown": true
+  }
+ ]
+}

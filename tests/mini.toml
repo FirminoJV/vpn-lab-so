@@ -1,0 +1,35 @@
+# Topologia mínima para testes de integração (3 servidores, 3 clientes)
+[lab]
+probe_interval_s = 3
+probe_count = 5
+probe_spacing_ms = 50
+relay_probes = true
+
+[[region]]
+code = "sao"
+name = "São Paulo"
+[[region]]
+code = "fra"
+name = "Frankfurt"
+[[region]]
+code = "tok"
+name = "Tóquio"
+
+[rtt_ms]
+"sao-fra" = 200
+"sao-tok" = 260
+"fra-tok" = 230
+
+[[server]]
+region = "sao"
+[[server]]
+region = "fra"
+[[server]]
+region = "tok"
+
+[[client]]
+region = "sao"
+count = 2
+[[client]]
+region = "tok"
+count = 1

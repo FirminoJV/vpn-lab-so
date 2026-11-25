@@ -1,0 +1,163 @@
+# =============================================================================
+#  VPN LAB — topologia do laboratório
+#  Edite este arquivo e rode `./lab gen` (ou `./lab up`, que já gera).
+#  Tudo aqui é simulado: a "internet" é uma rede Docker isolada e as distâncias
+#  entre continentes são reproduzidas com tc/netem (atraso, jitter, perda, banda).
+# =============================================================================
+
+[lab]
+probe_interval_s = 10      # a cada quantos segundos cada sonda mede
+probe_count      = 10      # pacotes por medição (espaçados por probe_spacing_ms)
+probe_spacing_ms = 100
+probe_size_bytes = 64
+relay_probes     = true    # mede também caminhos cliente -> servidor A -> servidor B
+tunnel_probe_count      = 50   # sondas pelo túnel: 50 pacotes por rodada (resolução de perda bem melhor)
+tunnel_probe_spacing_ms = 20
+grafana_port     = 3000
+prometheus_port  = 9090
+intra_region_rtt_ms = 2    # RTT entre máquinas da mesma região (antes do acesso)
+queue_ms = 100             # buffer de saída de cada máquina (ms na banda dela); fila cheia = descarte
+# Limite de CPU por contêiner: deixa os resultados iguais em computadores diferentes
+# (a vazão do túnel depende da CPU). Exige pelo menos 4 núcleos na máquina.
+cpus_server = 1.0
+cpus_client = 0.5
+
+# ---------------------------------------------------------------------------
+# Regiões. `code` vira parte do nome dos contêineres (máx. 8 caracteres).
+# ---------------------------------------------------------------------------
+[[region]]
+code = "sao"
+name = "São Paulo"
+
+[[region]]
+code = "mia"
+name = "Miami"
+
+[[region]]
+code = "fra"
+name = "Frankfurt"
+
+[[region]]
+code = "tok"
+name = "Tóquio"
+
+[[region]]
+code = "sin"
+name = "Singapura"
+
+[[region]]
+code = "jnb"
+name = "Joanesburgo"
+
+# ---------------------------------------------------------------------------
+# RTT entre regiões (ms), valores aproximados da internet pública.
+# Propositalmente tok-jnb (365) é pior que tok-sin + sin-jnb (70 + 250 = 320):
+# esse tipo de "violação da desigualdade triangular" existe na internet real
+# (peering ruim) e é exatamente o que um servidor intermediário resolve.
+# ---------------------------------------------------------------------------
+[rtt_ms]
+"sao-mia" = 115
+"sao-fra" = 205
+"sao-tok" = 255
+"sao-sin" = 325
+"sao-jnb" = 345
+"mia-fra" = 105
+"mia-tok" = 155
+"mia-sin" = 225
+"mia-jnb" = 235
+"fra-tok" = 230
+"fra-sin" = 160
+"fra-jnb" = 165
+"tok-sin" = 70
+"tok-jnb" = 365
+"sin-jnb" = 250
+
+# Perda adicional por par de regiões (%), opcional.
+[loss_pct]
+"sao-jnb" = 1.0
+"tok-jnb" = 0.5
+
+# Jitter por par de regiões (ms), opcional. Padrão: 2% do RTT.
+[jitter_ms]
+
+# ---------------------------------------------------------------------------
+# Servidores VPN (um por região aqui; pode haver vários na mesma região
+# usando `name`). uplink_mbit limita a banda do servidor — é o que satura
+# quando muitos usuários usam o túnel ao mesmo tempo.
+# ---------------------------------------------------------------------------
+[[server]]
+region = "sao"
+uplink_mbit = 200
+
+[[server]]
+region = "mia"
+uplink_mbit = 200
+
+[[server]]
+region = "fra"
+uplink_mbit = 200
+
+[[server]]
+region = "tok"
+uplink_mbit = 200
+
+[[server]]
+region = "sin"
+uplink_mbit = 200
+
+[[server]]
+region = "jnb"
+uplink_mbit = 100
+
+# ---------------------------------------------------------------------------
+# Clientes (máquinas virtuais dos usuários). `count` cria N clientes iguais.
+# access_* modela a "última milha" (fibra, 4G, Wi-Fi ruim...).
+# uplink_mbit = upload do cliente; downlink_mbit = download (padrão: 4x o upload).
+# Com 8 GB de RAM, até ~30 clientes no total roda com folga.
+# ---------------------------------------------------------------------------
+[[client]]
+region = "sao"
+count = 2
+access_rtt_ms = 8
+uplink_mbit = 50
+
+[[client]]
+region = "sao"
+count = 1
+profile = "4g"
+access_rtt_ms = 45
+access_jitter_ms = 8
+access_loss_pct = 1.0
+uplink_mbit = 15
+downlink_mbit = 40
+
+[[client]]
+region = "mia"
+count = 3
+access_rtt_ms = 6
+uplink_mbit = 100
+
+[[client]]
+region = "fra"
+count = 3
+access_rtt_ms = 6
+uplink_mbit = 100
+
+[[client]]
+region = "tok"
+count = 3
+access_rtt_ms = 5
+uplink_mbit = 100
+
+[[client]]
+region = "sin"
+count = 3
+access_rtt_ms = 7
+uplink_mbit = 50
+
+[[client]]
+region = "jnb"
+count = 3
+access_rtt_ms = 12
+access_loss_pct = 0.3
+uplink_mbit = 30

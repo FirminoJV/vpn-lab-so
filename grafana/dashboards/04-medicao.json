@@ -1,0 +1,595 @@
+{
+ "uid": "04-medicao",
+ "title": "VPN Lab — 4. Medição do grupo (usuários x desempenho)",
+ "description": "Acompanhe ./lab medir: os quatro gráficos dividem o mesmo eixo de tempo. Cada faixa laranja é uma condição (N usuários).",
+ "tags": [
+  "vpnlab"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "10s",
+ "time": {
+  "from": "now-30m",
+  "to": "now"
+ },
+ "templating": {
+  "list": [
+   {
+    "name": "servidor",
+    "label": "Servidor",
+    "type": "custom",
+    "query": "srv-jnb,srv-fra",
+    "current": {
+     "text": "srv-jnb",
+     "value": "srv-jnb"
+    },
+    "options": [
+     {
+      "text": "srv-jnb",
+      "value": "srv-jnb",
+      "selected": true
+     },
+     {
+      "text": "srv-fra",
+      "value": "srv-fra",
+      "selected": false
+     }
+    ],
+    "description": "srv-jnb = frente perda (João) · srv-fra = latência (Pedro) e vazão (Renan)"
+   }
+  ]
+ },
+ "panels": [
+  {
+   "type": "row",
+   "title": "Agora",
+   "id": 1,
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 0
+   },
+   "panels": []
+  },
+  {
+   "type": "stat",
+   "title": "Usuários simultâneos no túnel",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(vpnlab_load_active{server=\"$servidor\"}) or vector(0)",
+     "instant": true,
+     "legendFormat": ""
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center"
+   },
+   "id": 2,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 6,
+    "x": 0,
+    "y": 1
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Perda pelo túnel (todos os usuários)",
+   "description": "Média de 1 min das sondas de todos os 18 usuários até o servidor",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg(avg_over_time(vpnlab_probe_loss_ratio{path=\"tunnel\", dst=\"$servidor\"}[1m])) * 100",
+     "instant": true,
+     "legendFormat": ""
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center"
+   },
+   "id": 3,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 6,
+    "x": 6,
+    "y": 1
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Latência pelo túnel (todos os usuários)",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg(avg_over_time(vpnlab_probe_rtt_avg_ms{path=\"tunnel\", dst=\"$servidor\"}[1m]))",
+     "instant": true,
+     "legendFormat": ""
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center"
+   },
+   "id": 4,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 6,
+    "x": 12,
+    "y": 1
+   }
+  },
+  {
+   "type": "stat",
+   "title": "Vazão por usuário com carga",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg(vpnlab_load_throughput_bps{server=\"$servidor\"} > 0) or vector(0)",
+     "instant": true,
+     "legendFormat": ""
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "blue",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "value",
+    "graphMode": "none",
+    "textMode": "auto",
+    "justifyMode": "center"
+   },
+   "id": 5,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 6,
+    "x": 18,
+    "y": 1
+   }
+  },
+  {
+   "type": "row",
+   "title": "Ao longo da medição (mesmo eixo de tempo)",
+   "id": 6,
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 5
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "title": "1. Usuários simultâneos usando o servidor",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(vpnlab_load_active{server=\"$servidor\"}) or vector(0)",
+     "legendFormat": "usuários"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "showPoints": "never",
+      "lineInterpolation": "stepAfter"
+     },
+     "min": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "mean",
+      "max"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "id": 7,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 6,
+    "w": 24,
+    "x": 0,
+    "y": 6
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "2. Perda de pacotes pelo túnel (%) — frente do João",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg(avg_over_time(vpnlab_probe_loss_ratio{path=\"tunnel\", dst=\"$servidor\"}[30s])) * 100",
+     "legendFormat": "sondas: média dos 18 usuários"
+    },
+    {
+     "refId": "B",
+     "expr": "avg(vpnlab_load_udp_loss_ratio{server=\"$servidor\"}) * 100",
+     "legendFormat": "iperf3 UDP: usuários com carga"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percent",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "showPoints": "never"
+     },
+     "min": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "mean",
+      "max"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "id": 8,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 24,
+    "x": 0,
+    "y": 12
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "3. Latência pelo túnel (ms) — frente do Pedro",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg(vpnlab_probe_rtt_avg_ms{path=\"tunnel\", dst=\"$servidor\"})",
+     "legendFormat": "média dos 18 usuários"
+    },
+    {
+     "refId": "B",
+     "expr": "max(vpnlab_probe_rtt_avg_ms{path=\"tunnel\", dst=\"$servidor\"})",
+     "legendFormat": "pior usuário"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "showPoints": "never"
+     },
+     "min": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "mean",
+      "max"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "id": 9,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 24,
+    "x": 0,
+    "y": 20
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "4. Vazão por usuário (Mbit/s) — frente do Renan",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "avg(vpnlab_load_throughput_bps{server=\"$servidor\"} > 0)",
+     "legendFormat": "média por usuário"
+    },
+    {
+     "refId": "B",
+     "expr": "sum(vpnlab_load_throughput_bps{server=\"$servidor\"})",
+     "legendFormat": "total do servidor"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "showPoints": "never"
+     },
+     "min": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "mean",
+      "max"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "id": 10,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 24,
+    "x": 0,
+    "y": 28
+   }
+  },
+  {
+   "type": "timeseries",
+   "title": "5. Fila na saída do servidor (o buffer que enche e descarta)",
+   "description": "",
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "vpnlab_queue_backlog_bytes{node=\"$servidor\"}",
+     "legendFormat": "bytes na fila"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bytes",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 0,
+      "stacking": {
+       "mode": "none"
+      },
+      "showPoints": "never"
+     },
+     "min": 0
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "table",
+     "placement": "right",
+     "calcs": [
+      "lastNotNull",
+      "mean",
+      "max"
+     ]
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "id": 11,
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "gridPos": {
+    "h": 6,
+    "w": 24,
+    "x": 0,
+    "y": 36
+   }
+  }
+ ],
+ "editable": true,
+ "annotations": {
+  "list": [
+   {
+    "builtIn": 1,
+    "datasource": {
+     "type": "grafana",
+     "uid": "-- Grafana --"
+    },
+    "enable": true,
+    "hide": true,
+    "iconColor": "rgba(0, 211, 255, 1)",
+    "name": "Annotations & Alerts",
+    "type": "dashboard"
+   },
+   {
+    "datasource": {
+     "type": "grafana",
+     "uid": "-- Grafana --"
+    },
+    "enable": true,
+    "iconColor": "#eb6834",
+    "name": "Testes do laboratório",
+    "target": {
+     "type": "tags",
+     "tags": [
+      "vpnlab"
+     ],
+     "limit": 200
+    }
+   }
+  ]
+ },
+ "links": [
+  {
+   "title": "Dashboards do VPN Lab",
+   "type": "dashboards",
+   "tags": [
+    "vpnlab"
+   ],
+   "asDropdown": true
+  }
+ ]
+}

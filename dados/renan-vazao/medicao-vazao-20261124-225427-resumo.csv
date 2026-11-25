@@ -1,0 +1,4 @@
+usuarios,condicao,repeticoes,media,desvio,minimo,maximo,variacao_pct,base_usuarios
+2,baixa,3,90.0863,0.7723,89.225,90.717,0.0,2
+8,media,3,22.6063,0.0247,22.579,22.627,-74.91,2
+18,alta,3,10.0777,0.0132,10.066,10.092,-88.81,2
