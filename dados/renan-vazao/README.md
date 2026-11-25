@@ -27,3 +27,9 @@ o que muda é em quantas partes ela é dividida: 180 ÷ 2 = 90, 180 ÷ 8 = 22,5,
   linha verde = média por usuário, ~90 com 2, ~22 com 8, ~10 com 18. O bolo é o mesmo, as fatias diminuem.
 - **04 — Fila do servidor:** pequena com 2 usuários (~8 MiB), ~32 MiB com 8, ~78 MiB com 18:
   o TCP de mais usuários mantém mais pacotes esperando, o que aumenta a latência (frente do Pedro).
+
+## Gráfico: vazão do servidor x vazão por usuário
+
+`grafico-vazao-servidor-x-usuario.png` (gerado por `grafico_vazao.py`): barras azuis = vazão total do
+servidor (~180 Mbit/s nas três condições, abaixo do limite de 200); barras laranja = vazão de cada usuário
+(90,1 → 22,6 → 10,1). Círculos = cada rodada. Vazão total = vazão por usuário × número de usuários.
