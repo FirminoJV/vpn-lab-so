@@ -36,4 +36,4 @@ ax.set_title("O servidor entrega sempre ~180 Mbit/s; com mais usuários, a fatia
 fig.text(0.01, 0.01, "Download TCP sem limite, 3 repetições de 40 s (círculos = cada rodada). "
          "Vazão total = vazão por usuário × número de usuários. 24/11/2026.", fontsize=12, color="#52514e")
 fig.tight_layout(rect=(0, 0.03, 1, 1))
-fig.savefig("grafico-vazao-servidor-x-usuario.png", dpi=150)
+fig.savefig("prints/05-grafico-vazao-servidor-x-usuario.png", dpi=150)

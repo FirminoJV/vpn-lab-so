@@ -30,6 +30,6 @@ o que muda é em quantas partes ela é dividida: 180 ÷ 2 = 90, 180 ÷ 8 = 22,5,
 
 ## Gráfico: vazão do servidor x vazão por usuário
 
-`grafico-vazao-servidor-x-usuario.png` (gerado por `grafico_vazao.py`): barras azuis = vazão total do
+`prints/05-grafico-vazao-servidor-x-usuario.png` (gerado por `grafico_vazao.py`): barras azuis = vazão total do
 servidor (~180 Mbit/s nas três condições, abaixo do limite de 200); barras laranja = vazão de cada usuário
 (90,1 → 22,6 → 10,1). Círculos = cada rodada. Vazão total = vazão por usuário × número de usuários.
